@@ -1,0 +1,30 @@
+@font-face {
+    font-family: 'junbotdae';
+    src: url("./font/210_junbotdae_OTF_L.otf");
+}
+@font-face {
+    font-family: 'GureumGothic';
+    src: url("./font/210_gureumgothic_OTF_090.otf");
+}
+h1{
+    margin-top: 7%;
+}
+span.plus{
+    float: right;
+    font-size: 20px;
+}
+.ticket{
+    display: flex;
+    align-items: center;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.ticket .ticket-title{
+    flex-grow: 1;
+}
+.ticket .ticket-year{
+    font-size: 0.5rem;
+    color: red;
+}

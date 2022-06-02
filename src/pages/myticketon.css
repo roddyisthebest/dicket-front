@@ -1,0 +1,31 @@
+hr{
+    width: 100%;
+}
+hr.line{
+    width: 100%;
+}
+h1{
+    text-align: center;
+    font-size: 3em;
+    margin: 5%;
+}
+.list{
+    margin: 5%;
+}
+.img_tc{
+    width: 348px;
+    height: 480px;
+    border: 5px solid #000000;
+    border-radius: 44px;
+    float: left;
+    margin: 5% 5% 5% 0;
+}
+.detail{
+    width: 60%;
+    float: left;
+    font-size: 45px;
+}
+tr{
+    text-align: left;
+    vertical-align: middle;
+}
