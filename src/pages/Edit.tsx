@@ -38,6 +38,26 @@ const ButtonsContainer = styled.div`
   gap: 40px;
 `;
 
+const LoadingContainer = styled.div`
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+const LoadingText = styled.span`
+  color: black;
+  font-size: 50px;
+  font-weight: 600;
+`;
+
+const SmallText = styled.span`
+  color: black;
+  font-size: 30px;
+  font-weight: 300;
+`;
+
 export default function Edit() {
   const navigation = useNavigate();
 
@@ -55,19 +75,17 @@ export default function Edit() {
   const [title, setTitle] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [date, setDate] = useState<string>('');
-  const [startTime, setStartTime] = useState<number>();
-  const [endTime, setEndTime] = useState<number>();
-  const [age, setAge] = useState<number>();
-  const [max, setMax] = useState<number>(0);
-  const [concertImg, setConcertImg] = useState<string>('');
-  const [seatImg, setSeatImg] = useState<string>('');
-  const [seatInfo, setSeatInfo] = useState<
-    { seat: string; money: string; amount: string }[]
-  >([]);
-  const [tokenIds, setTokenIds] = useState<number[]>();
+  const [startTime, setStartTime] = useState<number>(0);
+  const [endTime, setEndTime] = useState<number>(0);
+  const [age, setAge] = useState<number>(0);
 
-  const [seatFile, setSeatFile] = useState<File>();
-  const [concertFile, setConcertFile] = useState<File>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [seatInfo, setSeatInfo] = useState<
+    { type: string; price: number; max: number }[]
+  >([]);
+
+  const [seatFile, setSeatFile] = useState<any>();
+  const [concertFile, setConcertFile] = useState<any>();
 
   const { account } = useSelector((state: InitialStateProp) => ({
     account: state.authState.address,
@@ -78,37 +96,66 @@ export default function Edit() {
 
   const enroll = async () => {
     try {
+      setLoading(true);
       var maxx = 0;
-      seatInfo.map((e) => {
-        maxx += parseInt(e.amount, 10);
+      seatInfo.map((e: { type: String; price: number; max: number }) => {
+        maxx += e.max;
       });
-      // console.log(
-      //   title,
-      //   location,
-      //   date,
-      //   startTime,
-      //   endTime,
-      //   age,
-      //   maxx,
-      //   seatInfo,
-      //   seatFile,
-      //   concertFile
-      // );
-      const response = await mintAnimalTokenContract.methods
-        .mintTicketToken(maxx)
-        .send({
-          from: account,
-          value: web3.utils.toWei('0.00000052', 'ether'),
-        });
+      const {
+        events: { Transfer },
+      } = await mintAnimalTokenContract.methods.mintTicketToken(maxx).send({
+        from: account,
+        value: web3.utils.toWei('0.00000052', 'ether'),
+      });
 
-      console.log(response);
-      // const {data} = await = concerts.saveConcert();
+      const tokenIds: number[] = [];
+
+      Transfer.map((e: any) => {
+        tokenIds.push(parseInt(e.returnValues.tokenId, 10));
+      });
+
+      const formDataConcert = new FormData();
+      formDataConcert.append('img', concertFile);
+
+      const {
+        data: { payload: concert_img },
+      } = await concerts.saveConcertImg(formDataConcert);
+
+      const formDataSeatImg = new FormData();
+      formDataSeatImg.append('img', seatFile);
+      const {
+        data: { payload: seat_img },
+      } = await concerts.saveSeatImg(formDataSeatImg);
+
+      await concerts.saveConcert({
+        title,
+        location,
+        date,
+        startTime,
+        endTime,
+        age,
+        max: maxx,
+        concertImg: concert_img,
+        seatImg: seat_img,
+        seatInfo,
+        tokenIds,
+      });
+
+      alert('성공적으로 등록되었습니다.');
+      navigation('/mypage');
     } catch (e) {
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
+  return loading ? (
+    <LoadingContainer>
+      <LoadingText>nft 티켓 발급 및 콘서트 등록 중 입니다.</LoadingText>
+      <SmallText>(빠르게 과정을 수행하시려면 가스를 올려주세요!)</SmallText>
+    </LoadingContainer>
+  ) : (
     <Container>
       <Header>
         <Text>콘서트 등록 및 수정</Text>

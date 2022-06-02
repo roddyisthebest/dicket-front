@@ -70,11 +70,11 @@ const column = (data: { seat: string; money: string; amount: string }[]) => {
 };
 
 export default function EditPriceInput({ setEdit }: { setEdit: Function }) {
-  const [seat, setSeat] = useState<string>('');
-  const [money, setMoney] = useState<string>('');
-  const [amount, setAmount] = useState<string>('');
+  const [type, setType] = useState<string>('');
+  const [price, setPrice] = useState<string>('');
+  const [max, setMax] = useState<string>('');
   const [data, setData] = useState<
-    { seat: string; money: string; amount: string }[]
+    { type: string; price: number; max: number }[]
   >([]);
 
   useEffect(() => {
@@ -86,10 +86,13 @@ export default function EditPriceInput({ setEdit }: { setEdit: Function }) {
   };
 
   const addData = () => {
-    setData([...data, { seat, money, amount }]);
-    setSeat('');
-    setMoney('');
-    setAmount('');
+    setData([
+      ...data,
+      { type, price: parseInt(price, 10), max: parseInt(max, 10) },
+    ]);
+    setType('');
+    setPrice('');
+    setMax('');
   };
 
   return (
@@ -100,27 +103,27 @@ export default function EditPriceInput({ setEdit }: { setEdit: Function }) {
           <InputContainer>
             <SubName>좌석 종류</SubName>
             <Input
-              value={seat}
+              value={type}
               onChange={(event: any) => {
-                setSeat(event.target.value);
+                setType(event.target.value);
               }}
             />
           </InputContainer>
           <InputContainer>
             <SubName>가격</SubName>
             <Input
-              value={money}
+              value={price}
               onChange={(event: any) => {
-                setMoney(event.target.value);
+                setPrice(event.target.value);
               }}
             />
           </InputContainer>
           <InputContainer>
             <SubName>개수</SubName>
             <Input
-              value={amount}
+              value={max}
               onChange={(event: any) => {
-                setAmount(event.target.value);
+                setMax(event.target.value);
               }}
             />
           </InputContainer>
@@ -133,13 +136,13 @@ export default function EditPriceInput({ setEdit }: { setEdit: Function }) {
           {data.map((e, idx) => (
             <InputsContainer style={{ marginTop: 10 }} key={idx}>
               <InputContainer>
-                <Input value={e.seat} />
+                <Input value={e.type} />
               </InputContainer>
               <InputContainer>
-                <Input value={e.money} />
+                <Input value={e.price} />
               </InputContainer>
               <InputContainer>
-                <Input value={e.amount} />
+                <Input value={e.max} />
               </InputContainer>
               <InputContainer>
                 <AddButton

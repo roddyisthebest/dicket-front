@@ -4,6 +4,11 @@ import axios, { AxiosResponse } from 'axios';
 export const test = 1;
 axios.defaults.withCredentials = true;
 
+interface Data {
+  code: number;
+  payload: any;
+  message: string;
+}
 const api = axios.create({
   baseURL: `http://localhost:3001` as string,
 });
@@ -32,10 +37,10 @@ type ConcertInfoProps = {
   title: string;
   location: string;
   date: string;
-  startTime: string;
-  endTime: string;
-  age: string;
-  max: string;
+  startTime: number;
+  endTime: number;
+  age: number;
+  max: number;
   concertImg: string;
   seatImg: string;
   seatInfo: seatInfoProp[];
@@ -71,43 +76,26 @@ export const authApi = {
 };
 
 export const myInfo = {
-  getMyConcerts: (): Promise<AxiosResponse<any>> =>
+  getMyConcerts: (): Promise<AxiosResponse<Data>> =>
     api.get('/users/concerts/false'),
   getMyTickets: (): Promise<AxiosResponse<any>> =>
     api.get('/users/tickets/false'),
 };
 
 export const concerts = {
-  saveConcertImg: async (e: any) => {
-    if (e.target.files) {
-      const uploadFile = e.target.files[0];
-      const formData = new FormData();
-      formData.append('files', uploadFile);
-      return await axios({
-        method: 'post',
-        url: '/concerts/concert_img',
-        data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    }
-  },
-  saveSeatImg: async (e: any) => {
-    if (e.target.files) {
-      const uploadFile = e.target.files[0];
-      const formData = new FormData();
-      formData.append('files', uploadFile);
-      return await axios({
-        method: 'post',
-        url: '/concerts/seat_img',
-        data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    }
-  },
+  saveConcertImg: async (formData: FormData): Promise<AxiosResponse<Data>> =>
+    api.post('/concerts/concert_img', formData),
+  // return await axios({
+  //   method: 'post',
+  //   url: 'http://localhost:3001/concerts/concert_img',
+  //   data: formData,
+  //   headers: {
+  //     'Content-Type': 'multipart/form-data',
+  //   },
+  // });
+  saveSeatImg: async (formData: FormData): Promise<AxiosResponse<Data>> =>
+    api.post('/concerts/seat_img', formData),
+
   saveConcert: ({
     title,
     location,

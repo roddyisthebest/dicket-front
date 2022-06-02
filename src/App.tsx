@@ -80,7 +80,7 @@ export default function App() {
       <SideBlank />
       <RoutesContainer>
         <Header />
-        {myAddress ? (
+        {isLogedIn && myAddress ? (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/mypage" element={<MyPage />} />
